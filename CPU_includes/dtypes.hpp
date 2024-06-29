@@ -37,6 +37,7 @@ struct duration_metadata
 	double macrotile_duration;
 	double match_duration;
     double micromap_duration;
+    double esc_duration;
 };
 
 struct microtile_metadata

@@ -10,6 +10,8 @@
 #include "../macrotile/macrotile.cuh"
 #include "../commons/print_dev.cuh"
 #include "../micromapping/micromapping.cuh"
+#include "../ESC/esc.cuh"
+
 using namespace std;
 
 void spgemm(const csr_matrix *mat_a, const csr_matrix *mat_b, csr_matrix *mat_c, duration_metadata *duration)
@@ -60,7 +62,6 @@ void spgemm(const csr_matrix *mat_a, const csr_matrix *mat_b, csr_matrix *mat_c,
     HANDLE_ERROR(cudaMalloc((void**)&ptr_table_micro, sizeof(microtile_hash_table)));
     HANDLE_ERROR(cudaMemcpy(ptr_table_micro, &table_micro, sizeof(microtile_hash_table), cudaMemcpyHostToDevice));
 
-    print_in_dev_table <<<1,1>>>(ptr_table_micro, n_microtiles_row);
     /**************************************************/
     /***************MACROTILE HANDLING*****************/
 
@@ -125,7 +126,13 @@ void spgemm(const csr_matrix *mat_a, const csr_matrix *mat_b, csr_matrix *mat_c,
     duration->micromap_duration = (double)(end - start) / CLOCKS_PER_SEC;
     printf("Micromap duration: %f\n", duration->micromap_duration);
     
-    print_in_dev_table <<<1,1>>>(ptr_table_macro_c, n_macrotiles_col);
+    // print_in_dev_table <<<1,1>>>(ptr_table_macro_c, n_macrotiles_col);
+
+    start = clock();
+    esc_scheduler(ptr_table_macro);
+    end = clock();
+    duration->esc_duration = (double)(end - start) / CLOCKS_PER_SEC;
+    printf("ESC duration: %f\n", duration->esc_duration);
     /***************************************************/
     // free the memory
     HANDLE_ERROR(cudaFree(dev_row_ptr));
