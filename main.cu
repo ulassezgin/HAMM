@@ -48,7 +48,7 @@ int main(int argc, char **argv)
     // Multiply the matrices
 
     spgemm(&csr_mat, &csr_T_mat, &csr_res_mat, duration);
-
+    HANDLE_ERROR(cudaDeviceSynchronize());
 
     delete duration;
     free_coo_matrix(&coo_mat);

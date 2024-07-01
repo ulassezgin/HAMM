@@ -228,10 +228,10 @@ void micromap(microtile_hash_table *table_micro, macrotile_hash_table *table_mac
     int *h_count_buffer = new int[n];
     HANDLE_ERROR(cudaMemcpy(h_count_buffer, count_buffer, n * sizeof(int), cudaMemcpyDeviceToHost));
 
-    for(int i = 0; i < n; i++)
-    {
-        // printf("Bucket %d: %d\n", i, h_count_buffer[i]);
-    }
+    // for(int i = 0; i < n; i++)
+    // {
+    //     // printf("Bucket %d: %d\n", i, h_count_buffer[i]);
+    // }
     int start = clock();
     allocate_microtiles_in_macro_table(*table_macro, n, h_count_buffer);
     int end = clock();
@@ -243,7 +243,7 @@ void micromap(microtile_hash_table *table_micro, macrotile_hash_table *table_mac
 
 
     assign_matches<<<n_blocks, n_threads>>>(table_micro, table_macro, count_buffer);
-    
+    HANDLE_ERROR(cudaDeviceSynchronize());
     // print_in_dev_table<<<1,1>>>(table_macro, 2);
 
     delete[] h_count_buffer;

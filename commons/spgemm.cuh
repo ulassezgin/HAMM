@@ -62,8 +62,8 @@ void spgemm(const csr_matrix *mat_a, const csr_matrix *mat_b, csr_matrix *mat_c,
     HANDLE_ERROR(cudaMalloc((void**)&ptr_table_micro, sizeof(microtile_hash_table)));
     HANDLE_ERROR(cudaMemcpy(ptr_table_micro, &table_micro, sizeof(microtile_hash_table), cudaMemcpyHostToDevice));
 
-    /**************************************************/
-    /***************MACROTILE HANDLING*****************/
+    // /**************************************************/
+    // /***************MACROTILE HANDLING*****************/
 
     HANDLE_ERROR(cudaMalloc((void**)&dev_a, sizeof(csr_matrix)));
     HANDLE_ERROR(cudaMalloc((void**)&dev_row_ptr, (mat_a->num_rows + 1) * sizeof(int)));
@@ -128,8 +128,11 @@ void spgemm(const csr_matrix *mat_a, const csr_matrix *mat_b, csr_matrix *mat_c,
     
     // print_in_dev_table <<<1,1>>>(ptr_table_macro_c, n_macrotiles_col);
 
+
+
+
     start = clock();
-    esc_scheduler(ptr_table_macro);
+    esc_scheduler(ptr_table_macro, ptr_table_micro);
     end = clock();
     duration->esc_duration = (double)(end - start) / CLOCKS_PER_SEC;
     printf("ESC duration: %f\n", duration->esc_duration);
